@@ -6,6 +6,25 @@ from django.urls import reverse
 
 from .models import User, Listing, Bid, Comment, WatchList
 
+#def place_bid(request, item_id):
+#    listing = Listing.objects.get(pk=item_id)
+#    
+#    # Create or update the highest bid for the item
+#    highest_bid, created = HighestBid.objects.get_or_create(listing=listing)
+#    if not created:
+#        highest_bid.bid = Bid.objects.filter(item=listing).order_by('-bid_amount').first()
+#        highest_bid.save()
+#    
+#    # Handle the new bid
+#    # ... (your code to create a new bid)
+#    
+#    pass
+
+def view_listing(request, item_id):
+    return render(request, "auctions/view_listing.html", {
+        "item": Listing.objects.get(pk=item_id)
+        })
+
 def index(request):
     return render(request, "auctions/index.html", {
         "listings": Listing.objects.all()

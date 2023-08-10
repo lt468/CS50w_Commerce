@@ -21,9 +21,6 @@ class Listing(models.Model):
     item_id = models.AutoField(primary_key=True)
     item_title = models.CharField(max_length=64)
     description = models.TextField()
-    # There must always be a starting bid price
-    starting_bid = models.DecimalField(max_digits=10, decimal_places=2, default=0.01)
-    current_bid = models.DecimalField(max_digits=10, decimal_places=2, default=0.01)
     category = models.CharField(max_length=64)
     item_image = models.ImageField(upload_to=user_media_path)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lister")
@@ -35,6 +32,10 @@ class Bid(models.Model):
     bidder = models.ForeignKey(User, on_delete=models.CASCADE, related_name="item_lister")
     bid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.01)
     bid_time = models.DateTimeField(auto_now_add=True)
+
+class HighestBid(models.Model):
+    listing = models.OneToOneField(Listing, on_delete=models.CASCADE, related_name="highest_bid")
+    bid = models.ForeignKey(Bid, on_delete=models.CASCADE)
 
 class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)

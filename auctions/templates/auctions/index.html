@@ -8,6 +8,7 @@
             <div class="row row-cols-1 row-cols-md-3 g-4"> 
                 {% for listing in listings %}
                     <div class="col-md-4"> 
+                        <a href="{% url 'view_listing' listing.item_id %}" class="card-link">
                         <div class="card mb-4 box-dark border-dark">
                             {% if listing.item_image %}
                                 <div class="card-header bg-dark text-light text-center"><strong>{{ listing.item_title }}</strong></div>
@@ -24,6 +25,7 @@
                                 </div>
                             </div>
                         </div>
+                        </a>
                     </div>
                 {% endfor %}
             </div>

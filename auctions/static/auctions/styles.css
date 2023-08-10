@@ -13,3 +13,16 @@ body {
     margin: 0 auto;
 }
 
+.card-link {
+    color: black;
+}
+
+.display-image {
+  max-height: 300px;
+  width: auto;
+  height: auto;
+}
+
+.auto-width-col {
+    max-width: calc(100% - 6rem);
+}

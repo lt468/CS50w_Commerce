@@ -1,0 +1,29 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-auto m-1 text-center">
+            <h5 class="display-4"> {{ item.item_title }}</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-auto border border-dark m-1 auto-width-col">
+            {% if item.item_image %}
+            <div class="d-flex justify-content-center">
+                <img src="{{ item.item_image.url }}" alt="Listing Image" class="display-image aspect-ratio"> 
+            </div>
+            {% else %}
+            <div class="d-flex justify-content-center">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png" alt="No Image Found" class="display-image aspect-ratio">
+            </div>
+            {% endif %}
+        </div>
+        <div class="col">
+            <h5 class="display-5"> {{ item.description }}</h5>
+            <br>
+            <h5 class="display-5"> {{ item.description }}</h5>
+        </div>
+    </div>
+</div>
+{% endblock %}
