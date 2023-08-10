@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 def user_media_path(instance, fname):
-    return f"user_{instance.id}/{fname}"
+    return "media/pencil.jpg"
 
 # In your view or form where you handle the file uploads, you can use this media path generation function like this:
 #uploaded_file = request.FILES['file']  # Replace 'file' with the actual field name
@@ -27,6 +27,7 @@ class Listing(models.Model):
     category = models.CharField(max_length=64)
     item_image = models.ImageField(upload_to=user_media_path)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lister")
+    time = models.DateTimeField(auto_now_add=True)
 
 class Bid(models.Model):
     bid_id = models.AutoField(primary_key=True)
