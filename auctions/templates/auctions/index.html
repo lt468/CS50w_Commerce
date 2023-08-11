@@ -18,7 +18,11 @@
                             {% endif %}
                             <div class="card-body">
                                 <p class="card-text text-truncate">{{ listing.description }}</p>
-                                <p class="card-text">Current Bid: £{{ listing.current_bid }}</p>
+                                {% if listing.highest_bid.bid.bid_amount %}
+                                <p class="card-text">Current Bid: £{{ listing.highest_bid.bid.bid_amount }}</p>
+                                {% else %}
+                                <p class="card-text">Starting Bid: £{{ listing.starting_bid }}</p>
+                                {% endif %}
                                 <div class="d-flex justify-content-between align-items-center">
                                     <small class="text-muted">Listed on {{ listing.time }}</small>
                                     <small class="text-muted">Listed by {{ listing.owner }}</small>

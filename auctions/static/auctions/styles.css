@@ -26,3 +26,11 @@ body {
 .auto-width-col {
     max-width: calc(100% - 6rem);
 }
+
+.slim-input {
+    max-width: 100px;
+}
+
+.alert {
+    display: inline-block;
+}

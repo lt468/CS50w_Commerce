@@ -22,6 +22,7 @@ class Listing(models.Model):
     item_title = models.CharField(max_length=64)
     description = models.TextField()
     category = models.CharField(max_length=64)
+    starting_bid = models.DecimalField(max_digits=10, decimal_places=2, default=0.01)
     item_image = models.ImageField(upload_to=user_media_path)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lister")
     time = models.DateTimeField(auto_now_add=True)
@@ -47,5 +48,5 @@ class Comment(models.Model):
 class WatchList(models.Model):
     watch_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    item = models.ForeignKey(Listing, on_delete=models.CASCADE)
+    item = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="favourite")
 
