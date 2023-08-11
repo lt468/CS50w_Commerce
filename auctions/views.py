@@ -9,7 +9,12 @@ from decimal import Decimal
 
 from django.utils.datastructures import MultiValueDictKeyError
 
-from .models import User, Listing, Bid, Comment, WatchList
+from .models import User, Listing, Bid, Comment, WatchList, Category
+
+def categories(request):
+    return render(request, "auctions/categories.html", {
+        "categories": Category.objects.all()
+        })
 
 def view_listing(request, item_id):
     bid_made = None

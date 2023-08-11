@@ -1,0 +1,10 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h4 class="display-4 text-center">Categories</h4>
+    <div class="list-group text-center d-flex align-items-center justify-content-center">
+        {% for category in categories %}
+        <a href="#" class="list-group-item d-flex align-items-center justify-content-center list-group-item-action border border-dark">{{ category }}</a>
+        {% endfor %}
+    </div>
+{% endblock %}

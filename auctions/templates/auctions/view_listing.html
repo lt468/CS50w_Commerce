@@ -3,8 +3,11 @@
 {% block body %}
 <div class="container">
     <div class="row">
-        <div class="col-auto m-1 text-center">
-            <h5 class="display-4"> {{ item.item_title }}</h4>
+        <div class="col-auto text-center">
+            <h4 class="display-4"> {{ item.item_title }}</h4>
+        </div>
+        <div class="col-auto  text-center align-self-center">
+            <h5 class="display-5">| {{item.category}}</h5>
         </div>
     </div>
     <div class="row">

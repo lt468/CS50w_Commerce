@@ -34,3 +34,12 @@ body {
 .alert {
     display: inline-block;
 }
+
+.list-group-item {
+    max-width: 400px;
+}
+
+.list-group-item:hover {
+    background-color: lightgray;
+    color: black;
+}
