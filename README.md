@@ -8,6 +8,10 @@ This is my submission to CS50w's Project 2: Commerce.
 
 For information about the course, check out the [official course page](https://cs50.harvard.edu/web/2020/).
 
+---
+Most, if not all, the CSS formatting is taken from the [Bootstrap documentation](https://getbootstrap.com/docs/5.3/getting-started/introduction/).
+---
+
 ## Project Specification
 
 Complete the implementation of your auction site. You must fulfill the following requirements:
