@@ -43,28 +43,39 @@
             {% else %}
             <h5 class="display-5">Starting Bid: £{{ item.starting_bid }}</h5>
             {% endif %}
-            {% if user.id == item.owner.id %}
-            <strong>You cannot bid on your own listing!</strong> 
-            {% elif user.is_authenticated %}
-            <form class="form-inline" method="POST">
-                {% csrf_token %}
-                <div class="form-group mr-3">
-                    <label class="mr-1" for="bid_value">Bid amount: £</label>
-                    <input required class="slim-input" type="number" step="0.01" id="bid_value" name="bid_value">
+
+            {% if item.is_active %}
+                {% if user.id == item.owner.id %}
+                <strong>You cannot bid on your own listing!</strong> 
+                <form method="GET">
+                    <input type="hidden" name="active" value="">
+                    <button type="submit" class="btn btn-primary">End listing</button>
+                </form>
+                {% elif user.is_authenticated %}
+                <form class="form-inline" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group mr-3">
+                        <label class="mr-1" for="bid_value">Bid amount: £</label>
+                        <input required class="slim-input" type="number" step="0.01" id="bid_value" name="bid_value">
+                    </div>
+                    <button type="submit" class="btn btn-primary mb-2 mt-1 mr-3">Bid!</button>
+                </form>
+                {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                    <div class="alert {% if message.tags == "error" %} alert-danger {% elif message.tags == "success" %} alert-success {% else %} alert-info {% endif %}">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
                 </div>
-                <button type="submit" class="btn btn-primary mb-2 mt-1 mr-3">Bid!</button>
-            </form>
-            {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                <div class="alert {% if message.tags == "error" %} alert-danger {% elif message.tags == "success" %} alert-success {% else %} alert-info {% endif %}">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            </div>
-            {% endif %}
+                {% endif %}
+                {% else %}
+                <strong>Log in to bid!</strong> 
+                {% endif %}
             {% else %}
-            <strong>Log in to bid!</strong> 
+            <div class="alert alert-info" role="alert">
+                {% if highest_bid_instance.bidder %} This item has ended, won by {{ highest_bid_instance.bidder }} {% else %} This item has been removed {% endif %}
+            </div>
             {% endif %}
         </div>
     </div>

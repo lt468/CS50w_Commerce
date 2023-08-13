@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
+from django.db.models import Max
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -31,7 +32,6 @@ def add_comment(request, item_id):
     return render(request, "auctions/add_comment.html", {
         "item": item
         })
-
 
 def display_category(request, category):
     category_object = Category.objects.get(slug=category)
@@ -80,15 +80,31 @@ def categories(request):
 def view_listing(request, item_id):
     item = Listing.objects.get(pk=item_id)
 
+    try: 
+        if request.method == "GET":
+            active_status = request.GET["active"]
+
+            if not active_status:
+                item.is_active = False
+                item.save()
+    except MultiValueDictKeyError:
+        pass
+
     # Get the highest bid instance
+
     highest_bid_instance = item.bids.order_by('-bid_amount').first()
+
+    if highest_bid_instance is not None:
+        compare_amount = highest_bid_instance.bid_amount
+    else:
+        compare_amount = item.starting_bid
 
     # If the user clicks the add to watchlist button then there is a post but with no bid_value
     if request.method == "POST":
         try:
             new_bid = request.POST["bid_value"]
             # Add the bid
-            if Decimal(new_bid) > Decimal(highest_bid_instance.bid_amount):
+            if Decimal(new_bid) > Decimal(compare_amount):
                 add_bid = Bid(item=item, bidder=request.user, bid_amount=new_bid)
                 add_bid.save()
 
@@ -131,8 +147,11 @@ def watchlist(request):
     })
 
 def index(request):
+    # Add the highest bid to the listings
+    listings = Listing.objects.annotate(highest_bid_amount=Max('bids__bid_amount'))
+
     return render(request, "auctions/index.html", {
-        "listings": Listing.objects.all()
+        "listings": listings
         })
 
 def login_view(request):
