@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
-from django.db.models import Max
+from django.db.models import Max, Subquery, OuterRef, F
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -35,7 +35,13 @@ def add_comment(request, item_id):
 
 def display_category(request, category):
     category_object = Category.objects.get(slug=category)
-    items = Listing.objects.filter(category=category_object)
+
+    # Filters the items and then sorts them by the highest bid amount
+    items = Listing.objects.filter(category=category_object).annotate(
+        highest_bid_amount=Subquery(
+            Bid.objects.filter(item=OuterRef('pk')).order_by('-bid_amount').values('bid_amount')[:1]
+        )
+    )
 
     return render(request, "auctions/display_category.html", {
         "category_title": category_object.category,
@@ -140,10 +146,16 @@ def view_listing(request, item_id):
 @login_required(login_url="login")
 def watchlist(request):
     user = request.user
+
+    # Get the watchlist items for the user and annotate with highest bid
     watchlist_items = WatchList.objects.filter(user=user).select_related('item')
+    watchlist_items_with_highest_bid = watchlist_items.annotate(highest_bid=Max('item__bids__bid_amount'))
+
+    # Annotate with bid status
+    watchlist_items_with_bid_status = watchlist_items_with_highest_bid.annotate(has_highest_bid=F('highest_bid'))
 
     return render(request, "auctions/watchlist.html", {
-        "watchlist_items": watchlist_items
+        "watchlist_items": watchlist_items_with_bid_status
     })
 
 def index(request):
