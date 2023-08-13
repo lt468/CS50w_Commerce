@@ -55,3 +55,16 @@ input[type=number] {
     background-color: lightgray;
     color: black;
 }
+
+/* Ensure the card body has a fixed height */
+.card-body {
+    height: 150px; /* Adjust this value as needed */
+}
+
+/* Resize images to fit the card's width or height while maintaining aspect ratio */
+.card-img-top {
+    max-width: 100%; /* Image will be at most as wide as the card */
+    max-height: 100%; /* Image will be at most as tall as the card */
+    width: auto;
+    height: auto;
+}

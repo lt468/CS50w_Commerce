@@ -1,0 +1,52 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-auto">
+            <h1>Commenting on...</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-auto text-center">
+            <h4 class="display-4"> {{ item.item_title }}</h4>
+        </div>
+        <div class="col-auto text-center align-self-center">
+            <h5 class="display-5">| {{ item.category }}</h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-auto m-1 auto-width-col">
+            {% if item.item_image %}
+            <div class="d-flex justify-content-center">
+                <img src="{{ item.item_image.url }}" alt="Listing Image" class="display-image aspect-ratio"> 
+            </div>
+            {% else %}
+            <div class="d-flex justify-content-center">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/d/d1/Image_not_available.png" alt="No Image Found" class="display-image aspect-ratio">
+            </div>
+            {% endif %}
+        </div>
+        <div class="col">
+            <h5 class="display-5"> {{ item.description }}</h5>
+            <small class="text-muted">Listed on {{ item.time }} by {{ item.owner }}</small>
+            <br>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-auto">
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-row">
+                    <div class="form-group">
+                        <h1><label for="comment">Write your comment:</label></h1>
+                        <textarea required class="form-control" id="comment" name="comment" rows="5"></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Add comment!</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

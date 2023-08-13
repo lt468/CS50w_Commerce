@@ -36,6 +36,7 @@ class Listing(models.Model):
     item_image = models.ImageField(upload_to=user_media_path)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="lister")
     time = models.DateTimeField(auto_now_add=True)
+    is_active = models.BooleanField(default=True)
 
     def __str__(self):
         return f"{self.item_title} by {self.owner}, id {self.item_id}"

@@ -1,20 +1,39 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
-from django.db.models.query import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django.db.models import Max 
 from decimal import Decimal
 
 from django.utils.datastructures import MultiValueDictKeyError
 
 from .models import User, Listing, Bid, Comment, WatchList, Category
 
+@login_required(login_url="login")
+def add_comment(request, item_id):
+    item = Listing.objects.get(pk=item_id)
+
+    if request.method == "POST":
+        comment = request.POST["comment"]
+        commenter = request.user
+
+        new_comment = Comment(
+                comment_text = comment,
+                comment_item = item,
+                commenter = commenter)
+
+        new_comment.save()
+        return HttpResponseRedirect(reverse('view_listing', args=[item_id]))
+
+    return render(request, "auctions/add_comment.html", {
+        "item": item
+        })
+
+
 def display_category(request, category):
-    print(category)
     category_object = Category.objects.get(slug=category)
     items = Listing.objects.filter(category=category_object)
 
@@ -57,22 +76,29 @@ def categories(request):
         "categories": Category.objects.all()
         })
 
-def view_listing(request, item_id):
-    bid_made = None
 
+def view_listing(request, item_id):
     item = Listing.objects.get(pk=item_id)
-    highest_bid = item.bids.aggregate(Max('bid_amount'))['bid_amount__max']
-    if highest_bid is None:
-        highest_bid = Decimal(item.starting_bid)
+
+    # Get the highest bid instance
+    highest_bid_instance = item.bids.order_by('-bid_amount').first()
 
     # If the user clicks the add to watchlist button then there is a post but with no bid_value
     if request.method == "POST":
         try:
             new_bid = request.POST["bid_value"]
-            if Decimal(new_bid) > Decimal(highest_bid):
-                bid_made = True
+            # Add the bid
+            if Decimal(new_bid) > Decimal(highest_bid_instance.bid_amount):
+                add_bid = Bid(item=item, bidder=request.user, bid_amount=new_bid)
+                add_bid.save()
+
+                messages.success(request, "Bid placed!")
+
             else:
-                bid_made = False
+                messages.error(request, "Your bid must be higher than the current bid!")
+
+            return HttpResponseRedirect(reverse('view_listing', args=[item_id]))
+
         # Adding to watchlist
         except MultiValueDictKeyError:
             watchlist_entry = WatchList.objects.filter(user=request.user, item=item)
@@ -90,10 +116,10 @@ def view_listing(request, item_id):
 
     return render(request, "auctions/view_listing.html", {
         "item": item,
-        "highest_bid": highest_bid,
-        "bid_made": bid_made,
-        "item_in_watchlist": item_in_watchlist
-        })
+        "highest_bid_instance": highest_bid_instance,
+        "item_in_watchlist": item_in_watchlist,
+        "comments": item.item_comment.all()
+    })
 
 @login_required(login_url="login")
 def watchlist(request):

@@ -2,7 +2,6 @@
  
 {% block body %}
 <div class="m-3">
-    <!-- so the image can be read correctly -->
 <form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="form-row">
@@ -25,7 +24,7 @@
     </div>
     <div class="form-group">
         <label for="start_bid_value">Starting Bid £</label>
-        <input required class="slim-input" type="number" id="start_bid_value" name="start_bid_value" placeholder="0.01">
+        <input required class="slim-input" step="0.01" type="number" id="start_bid_value" name="start_bid_value" placeholder="0.01">
     </div>
     <div class="form-group">
         <label for="image">Image</label>
