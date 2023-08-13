@@ -1,17 +1,18 @@
 {% extends "auctions/layout.html" %}
-
+ 
 {% block body %}
 <div class="m-3">
-<form method="POST">
+    <!-- so the image can be read correctly -->
+<form method="POST" enctype="multipart/form-data">
     {% csrf_token %}
     <div class="form-row">
         <div class="form-group col-md-6">
             <label for="title">Listing Title</label>
-            <input type="text" class="form-control" id="title" placeholder="Title">
+            <input required type="text" class="form-control" id="title" name = "title" placeholder="Title">
         </div>
         <div class="form-group col-md-6">
             <label for="category">Category</label>
-            <select class="custom-select" id="category">
+            <select required class="custom-select" id="category" name="category">
                 {% for category in categories %}
                 <option value="{{ category }}">{{ category }}</option>
                 {% endfor %}
@@ -19,16 +20,16 @@
         </div>
     </div>
     <div class="form-group">
-        <label for="text_area">Description</label>
-        <textarea class="form-control" id="text_area" rows="5"></textarea>
+        <label for="description">Description</label>
+        <textarea required class="form-control" id="description" name="description" rows="5"></textarea>
     </div>
     <div class="form-group">
         <label for="start_bid_value">Starting Bid £</label>
         <input required class="slim-input" type="number" id="start_bid_value" name="start_bid_value" placeholder="0.01">
     </div>
     <div class="form-group">
-        <label for="file_upload">Image</label>
-        <input type="file" class="form-control-file" id="file_upload">
+        <label for="image">Image</label>
+        <input required type="file" class="form-control-file" id="image" name="image">
     </div>
     <button type="submit" class="btn btn-primary">List Item</button>
 </form>

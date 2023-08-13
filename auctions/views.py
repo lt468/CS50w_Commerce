@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.db.models.query import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect
@@ -12,7 +13,41 @@ from django.utils.datastructures import MultiValueDictKeyError
 
 from .models import User, Listing, Bid, Comment, WatchList, Category
 
+def display_category(request, category):
+    print(category)
+    category_object = Category.objects.get(slug=category)
+    items = Listing.objects.filter(category=category_object)
+
+    return render(request, "auctions/display_category.html", {
+        "category_title": category_object.category,
+        "items": items
+        })
+
 def add_lisitng(request):
+    # Checking to see if user has listed an item and then getting the information
+    if request.method == "POST":
+        title = request.POST["title"]
+        category = request.POST["category"]
+        description = request.POST["description"]
+        start_bid_value = request.POST["start_bid_value"]
+        image = request.FILES["image"]
+
+        # Required to select correct category
+        try:
+            category_instance = Category.objects.get(category=category)
+        except ObjectDoesNotExist:
+            return HttpResponseRedirect(reverse("index"))
+
+        new_listing = Listing(item_title = title,
+                              description = description,
+                              category = category_instance,
+                              starting_bid = start_bid_value,
+                              owner = request.user,
+                              item_image = image)
+
+        new_listing.save()
+        return HttpResponseRedirect(reverse('view_listing', args=[new_listing.item_id]))
+
     return render(request, "auctions/add_listing.html", {
         "categories": Category.objects.all()
         })
@@ -69,13 +104,10 @@ def watchlist(request):
         "watchlist_items": watchlist_items
     })
 
-
-
 def index(request):
     return render(request, "auctions/index.html", {
         "listings": Listing.objects.all()
         })
-
 
 def login_view(request):
     if request.method == "POST":

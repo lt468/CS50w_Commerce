@@ -1,24 +1,28 @@
+import os
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.text import slugify
 
-def user_media_path(instance, fname):
-    return "media/pencil.jpg"
+def user_media_path(instance, filename):
+    # Get the user's id
+    user_id = instance.owner.id
 
-# In your view or form where you handle the file uploads, you can use this media path generation function like this:
-#uploaded_file = request.FILES['file']  # Replace 'file' with the actual field name
-#user_id = request.user.id
-#media_path = user_media_path(request.user, uploaded_file.name)
-#
-## Save the uploaded file to the media path
-#with open(media_path, 'wb') as f:
-#    for chunk in uploaded_file.chunks():
-#        f.write(chunk)
+    # Create a subdirectory using the user's id
+    upload_path = os.path.join(str(user_id), filename)
+
+    return upload_path
 
 class User(AbstractUser):
     pass
 
 class Category(models.Model):
     category = models.CharField(max_length=64)
+    slug = models.SlugField(unique=True, default='default-slug')  # Creates a slug for the url
+
+    # Makes the slug
+    def save(self):
+        self.slug = slugify(self.category)  # Generate slug from category
+        super().save()
     
     def __str__(self):
         return self.category
@@ -34,8 +38,7 @@ class Listing(models.Model):
     time = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.item_title
-
+        return f"{self.item_title} by {self.owner}, id {self.item_id}"
 
 class Bid(models.Model):
     bid_id = models.AutoField(primary_key=True)
@@ -44,6 +47,9 @@ class Bid(models.Model):
     bid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.01)
     bid_time = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"bid id: {self.bid_id} on {self.item} by {self.bidder} for £{self.bid_amount} at {self.bid_time}"
+
 class HighestBid(models.Model):
     listing = models.OneToOneField(Listing, on_delete=models.CASCADE, related_name="highest_bid")
     bid = models.ForeignKey(Bid, on_delete=models.CASCADE)
@@ -51,12 +57,19 @@ class HighestBid(models.Model):
 class Comment(models.Model):
     comment_id = models.AutoField(primary_key=True)
     comment_text = models.TextField()
+    comment_item = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="item_comment")
     # When a commenter, a user, is deleted then all their comments are deleted too
     commenter = models.ForeignKey(User, on_delete=models.CASCADE, related_name="buyer")
     comment_time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"comment id: {self.comment_id} by {self.commenter} on {self.comment_item}"
 
 class WatchList(models.Model):
     watch_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     item = models.ForeignKey(Listing, on_delete=models.CASCADE, related_name="favourite")
+
+    def __str__(self):
+        return f"{self.item} watched by {self.user}"
 

@@ -10,7 +10,7 @@ For information about the course, check out the [official course page](https://c
 
 ---
 
-### Most, if not all, the CSS formatting is taken from the [Bootstrap documentation](https://getbootstrap.com/docs/5.3/getting-started/introduction/).
+### Most, if not all, of the CSS formatting is taken from the [Bootstrap documentation](https://getbootstrap.com/docs/5.3/getting-started/introduction/).
 
 ---
 
